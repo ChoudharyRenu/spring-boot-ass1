@@ -1,6 +1,7 @@
 package com.stackroute.muzixapp.controller;
 
 import com.stackroute.muzixapp.domain.Track;
+import com.stackroute.muzixapp.exceptions.TrackAlreadyExists;
 import com.stackroute.muzixapp.service.MuzixService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,7 @@ public class MuzixAppController {
         try{
             muzixService.saveTrack(track);
             responseEntity = new ResponseEntity<String>("successfully created", HttpStatus.CREATED);
-        }catch (Exception e){
+        }catch (TrackAlreadyExists e){
             responseEntity = new ResponseEntity<String>(e.getMessage(),HttpStatus.CONFLICT);
         }
         return responseEntity;
@@ -48,4 +49,18 @@ public class MuzixAppController {
         }
         return responseEntity;
     }
+    @PostMapping("/byname/{trackname}")
+    public ResponseEntity<?> trackByName(@PathVariable String trackname) {
+        ResponseEntity responseEntity;
+
+        try {
+            List<Track> t = muzixService.trackByName(trackname);
+            responseEntity = new ResponseEntity<>(t, HttpStatus.CREATED);
+        } catch (Exception e) {
+            responseEntity = new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+            e.printStackTrace();
+        }
+        return responseEntity;
+    }
+
 }
